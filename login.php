@@ -4,11 +4,11 @@ include("connection.php");
 include("functions.php");
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
-    $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
-    if (!empty($username) && !empty($password) && !is_numeric($username)) {
+    if (!empty($email) && !empty($password) && !is_numeric($email)) {
         //read from database
-        $query = "select * from users where username = '$username' limit 1";
+        $query = "select * from users where email = '$email' limit 1";
         $result = mysqli_query($con, $query);
         if ($result && mysqli_num_rows(($result)) > 0) {
             $user_data = mysqli_fetch_assoc($result);
@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 die;
             }
         }
-        echo "Wrong username or password!";
+        echo "Wrong email or password!";
     } else {
-        echo "Wrong username or password!";
+        echo "Please enter your email and password!";
     }
 }
 ?>
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <div id="box">
         <form method="post">
 
-            <input id="text" type="text" name="username" placeholder="Username"><br><br>
+            <input id="text" type="text" name="email" placeholder="Email"><br><br>
             <input id="text" type="password" name="password" placeholder="Password"><br><br>
             <button id="button" type="submit" name="submit">Login</button><br><br>
             <a href="signup.php">Click to Signup</a>
@@ -56,5 +56,3 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 </body>
 
 </html>
-
-</body>
