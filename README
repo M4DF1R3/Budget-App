@@ -1,4 +1,4 @@
-#Basic Budget App using PHP and MySQL
+# Basic Budget App using PHP and MySQL
 
 Fully manual budget app to track your expenses. Created using PHP and MYSQL with XAMPP to control local server.
 
@@ -18,8 +18,7 @@ Installation Instructions:
 5. Create the MySQL tables in phpMyAdmin using the code in the appendix
 6. The website can be viewed under http://localhost/Budget-app/login.php
 
-##Appendix
-```
+## Appendix
 CREATE TABLE users (
   user_id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
@@ -44,4 +43,3 @@ CREATE TABLE expenses (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (budget_id) REFERENCES budgets(id)
 );
-```
