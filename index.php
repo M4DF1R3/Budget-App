@@ -24,6 +24,16 @@ function getBudgets($con, $user_data)
         echo "<option value='" . $row['id'] . "' " . $selected . ">" . $row['budget_name'] . "</option>";
     }
 }
+
+function calcExpenses($con, $budget_id)
+{
+    $stmt = $con->prepare("SELECT SUM(expense_amount) AS total FROM expenses WHERE budget_id = ?");
+    $stmt->bind_param("i", $budget_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['total'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +52,7 @@ function getBudgets($con, $user_data)
         .menu-bar {
             background-color: #333;
             height: 100vh;
-            width: 150px;
+            width: 120px;
             position: fixed;
             top: 0;
             left: 0;
@@ -105,6 +115,54 @@ function getBudgets($con, $user_data)
         <h2>Hello,
             <?php echo $user_data['name']; ?>
         </h2>
+        <div class="container">
+            <div class="column">
+                <h3>Budget Amount</h3>
+                <p>
+                    <?php
+                    if (isset($_POST['select_budget'])) {
+                        $_SESSION['selected_budget_id'] = $_POST['budget_id'];
+                        // Get the budget amount
+                        $stmt = $con->prepare("SELECT user_budget FROM budgets WHERE id = ?");
+                        $stmt->bind_param("i", $_SESSION['selected_budget_id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $budget_amount = $result->fetch_assoc()['user_budget'];
+                        echo '$' . $budget_amount;
+                    }
+                    ?>
+                </p>
+            </div>
+            <div class="column">
+                <h3>Total Expense</h3>
+                <p>
+                    <?php
+                    if (!is_null($budget_id)) {
+                        $total_expense = calcExpenses($con, $budget_id);
+                        echo '$' . $total_expense;
+                    }
+                    ?>
+                </p>
+            </div>
+            <div class="column">
+                <h3>Balance</h3>
+                <p>
+                    <?php
+                    if (!is_null($budget_id)) {
+                        $total_expense = calcExpenses($con, $budget_id);
+                        $stmt = $con->prepare("SELECT user_budget FROM budgets WHERE id = ?");
+                        $stmt->bind_param("i", $budget_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $budget_amount = $result->fetch_assoc()['user_budget'];
+                        $balance = $budget_amount - $total_expense;
+                        echo '$' . $balance;
+                    }
+                    ?>
+                </p>
+            </div>
+        </div>
+
         <form method="post">
             <input type="text" class="submit-input" name="budget_name" placeholder="Budget name">
             <input type="number" class="submit-input" name="user_budget" placeholder="Budget amount">
@@ -163,6 +221,8 @@ function getBudgets($con, $user_data)
             <button type="submit" class="submit-btn" name="add_expense">Add Expense</button>
         </form>
 
+
+
         <table>
             <tr>
                 <th>Expense</th>
@@ -197,7 +257,7 @@ function getBudgets($con, $user_data)
                     echo "<td>
                             <form method='post'>
                                 <input type='hidden' name='expense_id' value='" . $row['id'] . "'>
-                                <button type='submit' name='delete_expense'>Delete Expense</button>
+                                <button type='submit' class='delete-expense' name='delete_expense'>Delete Expense</button>
                             </form>
                           </td>";
                     echo "</tr>";
