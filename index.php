@@ -12,16 +12,17 @@ if (!is_null($budget_id)) {
     $stmt->execute();
     $result = $stmt->get_result();
 }
-
-if (isset($_POST['add_expense'])) {
-
-    $budget_id = $_POST['budget_id'];
-    $expense_name = $_POST['expense_name'];
-    $expense_amount = $_POST['expense_amount'];
-
-    $stmt = $con->prepare("INSERT INTO expenses (expense_name, expense_amount, budget_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("sdi", $expense_name, $expense_amount, $budget_id);
+function getBudgets($con, $user_data)
+{
+    $stmt = $con->prepare("SELECT * FROM budgets WHERE user_id = ?");
+    $stmt->bind_param("i", $user_data['user_id']);
     $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+        $selected = isset($_POST['budget_id']) && $_POST['budget_id'] == $row['id'] ? 'selected' : '';
+        echo "<option value='" . $row['id'] . "' " . $selected . ">" . $row['budget_name'] . "</option>";
+    }
 }
 ?>
 
@@ -57,19 +58,6 @@ if (isset($_POST['add_expense'])) {
         <label for="budget_id">Budget:</label>
         <select id="budget_id" name="budget_id">
             <?php
-            function getBudgets($con, $user_data)
-            {
-                $stmt = $con->prepare("SELECT * FROM budgets WHERE user_id = ?");
-                $stmt->bind_param("i", $user_data['user_id']);
-                $stmt->execute();
-                $result = $stmt->get_result();
-
-                while ($row = $result->fetch_assoc()) {
-                    $selected = isset($_POST['budget_id']) && $_POST['budget_id'] == $row['id'] ? 'selected' : '';
-                    echo "<option value='" . $row['id'] . "' " . $selected . ">" . $row['budget_name'] . "</option>";
-                }
-            }
-
             if (isset($_POST['create_budget'])) {
                 if (!empty($budget_name) && $user_budget > 0) {
                     $budget_name = $_POST['budget_name'];
@@ -99,7 +87,10 @@ if (isset($_POST['add_expense'])) {
                 getBudgets($con, $user_data);
 
                 // Unset the budget_id so that it doesn't cause issues when redrawing the page
-                $budget_id = null;
+                // $budget_id = null;
+            } else if (isset($_POST['select_budget'])) {
+                $_SESSION['selected_budget_id'] = $_POST['budget_id'];
+                getBudgets($con, $user_data);
             } else {
                 getBudgets($con, $user_data);
             }
@@ -107,9 +98,7 @@ if (isset($_POST['add_expense'])) {
         </select>
         <button type="submit" name="select_budget">Select Budget</button>
         <button type="submit" name="delete_budget">Delete Budget</button>
-        <?php
-
-        ?>
+        <?php ?>
         <br>
         <input type="text" name="expense_name" placeholder="Expense name">
         <input type="number" name="expense_amount" placeholder="Expense amount">
@@ -123,6 +112,18 @@ if (isset($_POST['add_expense'])) {
             <th>Delete</th>
         </tr>
         <?php
+
+
+        if (isset($_POST['add_expense'])) {
+            $budget_id = $_POST['budget_id'];
+            $expense_name = $_POST['expense_name'];
+            $expense_amount = $_POST['expense_amount'];
+
+            $stmt = $con->prepare("INSERT INTO expenses (expense_name, expense_amount, budget_id) VALUES (?, ?, ?)");
+            $stmt->bind_param("sdi", $expense_name, $expense_amount, $budget_id);
+            $stmt->execute();
+        }
+
         function displayExpenses($con, $budget_id)
         {
             $stmt = $con->prepare("SELECT * FROM expenses WHERE budget_id = ?");
@@ -146,23 +147,17 @@ if (isset($_POST['add_expense'])) {
         }
 
         if (!is_null($budget_id)) {
-
             $budget_id = $_POST['budget_id'];
-            echo $budget_id;
             displayExpenses($con, $budget_id);
         }
 
         if (isset($_POST['delete_expense'])) {
+            $selected_budget_id = isset($_SESSION['selected_budget_id']) ? $_SESSION['selected_budget_id'] : null;
             $expense_id = $_POST['expense_id'];
             $stmt = $con->prepare("DELETE FROM expenses WHERE id = ?");
             $stmt->bind_param("i", $expense_id);
             $stmt->execute();
-
-            if (!is_null($budget_id)) {
-                $budget_id = $_POST['budget_id'];
-            }
-            echo $budget_id;
-            displayExpenses($con, $budget_id);
+            displayExpenses($con, $selected_budget_id);
             unset($_POST['delete_expense']);
         }
         ?>

@@ -1,7 +1,6 @@
 <?php
 session_start();
-include("connection.php");
-include("functions.php");
+include("config.php");
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
     $email = $_POST['email'];
