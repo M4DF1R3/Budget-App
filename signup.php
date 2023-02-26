@@ -1,7 +1,8 @@
 <?php
 session_start();
-include("config.php");
+include("connection.php");
 include("functions.php");
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //something was posted
     $name = $_POST['name'];

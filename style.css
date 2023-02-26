@@ -25,16 +25,45 @@ table {
     width: 100%;
 }
 
-th, td {
+th,
+td {
     text-align: left;
     padding: 8px;
 }
 
 th {
-    background-color: #3f51b5;
+    background-color: #4CAF50;
     color: white;
 }
 
 tr:nth-child(even) {
     background-color: #f2f2f2;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    margin: 0px 50px 0px 200px;
+}
+
+.submit-input {
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    -webkit-transition: 0.5s;
+    transition: 0.5s;
+    outline: none;
+}
+
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
 }
