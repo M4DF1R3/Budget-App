@@ -4,12 +4,12 @@ include("connection.php");
 include("functions.php");
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    //something was posted
+    // Something was posted
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     if (!empty($name) && !empty($email) && !empty($password) && !is_numeric($name)) {
-        //save to database
+        // Save to database
         $query = "insert into users (name, email, password) values ('$name', '$email', '$password')";
         mysqli_query($con, $query);
         header("Location: login.php");
@@ -44,10 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <button id="button" type="submit" name="submit">Login</button><br><br>
             <a href="login.php">Click to Login</a>
         </form>
-
-
-        <!-- Load JavaScript -->
-        <script src="js/users.js"></script>
+    </div>
 </body>
 
 </html>

@@ -1,5 +1,7 @@
 <?php
+
 function check_login($con) {
+    // Check if user is logged
     if (isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
         $query = "SELECT * FROM users WHERE user_id = ?";

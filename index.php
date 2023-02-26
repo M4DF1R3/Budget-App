@@ -14,6 +14,7 @@ if (!is_null($budget_id)) {
 }
 function getBudgets($con, $user_data)
 {
+    // Gets all budgets associated to the user_id
     $stmt = $con->prepare("SELECT * FROM budgets WHERE user_id = ?");
     $stmt->bind_param("i", $user_data['user_id']);
     $stmt->execute();
@@ -26,7 +27,8 @@ function getBudgets($con, $user_data)
 }
 
 function calcExpenses($con, $budget_id)
-{
+{ 
+    // Calculates the total expenses for a budget
     $stmt = $con->prepare("SELECT SUM(expense_amount) AS total FROM expenses WHERE budget_id = ?");
     $stmt->bind_param("i", $budget_id);
     $stmt->execute();
@@ -95,7 +97,6 @@ function calcExpenses($con, $budget_id)
         .menu-bar li a:hover {
             background-color: white;
             color: #333;
-            /* border-radius: 10px; */
             transform: scale(1.1);
         }
     </style>
@@ -117,14 +118,14 @@ function calcExpenses($con, $budget_id)
         </h2>
         <div class="container">
             <div class="column">
-                <h3>Budget Amount</h3>
+                <h3>Budget Amount:</h3>
                 <p>
                     <?php
-                    if (isset($_POST['select_budget'])) {
-                        $_SESSION['selected_budget_id'] = $_POST['budget_id'];
+                    if (isset($_POST['select_budget']) || !is_null($budget_id) || isset($_POST['delete_expense']) || isset($_POST['add_expense'])) {
                         // Get the budget amount
+                        $selected_budget_id = isset($_SESSION['selected_budget_id']) ? $_SESSION['selected_budget_id'] : null;
                         $stmt = $con->prepare("SELECT user_budget FROM budgets WHERE id = ?");
-                        $stmt->bind_param("i", $_SESSION['selected_budget_id']);
+                        $stmt->bind_param("i", $selected_budget_id);
                         $stmt->execute();
                         $result = $stmt->get_result();
                         $budget_amount = $result->fetch_assoc()['user_budget'];
@@ -134,22 +135,25 @@ function calcExpenses($con, $budget_id)
                 </p>
             </div>
             <div class="column">
-                <h3>Total Expense</h3>
+                <h3>Total Expense:</h3>
                 <p>
                     <?php
-                    if (!is_null($budget_id)) {
-                        $total_expense = calcExpenses($con, $budget_id);
+                    if (!is_null($budget_id) || isset($_POST['delete_expense']) || isset($_POST['add_expense'])) {
+                        $selected_budget_id = isset($_SESSION['selected_budget_id']) ? $_SESSION['selected_budget_id'] : null;
+                        $total_expense = calcExpenses($con, $selected_budget_id);
                         echo '$' . $total_expense;
                     }
                     ?>
                 </p>
             </div>
             <div class="column">
-                <h3>Balance</h3>
+                <h3>Balance:</h3>
                 <p>
                     <?php
-                    if (!is_null($budget_id)) {
-                        $total_expense = calcExpenses($con, $budget_id);
+                    if (!is_null($budget_id) || isset($_POST['delete_expense']) || isset($_POST['add_expense'])) {
+                        // Calculate the balance for the budget
+                        $selected_budget_id = isset($_SESSION['selected_budget_id']) ? $_SESSION['selected_budget_id'] : null;
+                        $total_expense = calcExpenses($con, $selected_budget_id);
                         $stmt = $con->prepare("SELECT user_budget FROM budgets WHERE id = ?");
                         $stmt->bind_param("i", $budget_id);
                         $stmt->execute();
@@ -176,6 +180,7 @@ function calcExpenses($con, $budget_id)
                 <?php
                 if (isset($_POST['create_budget'])) {
                     if (!empty($budget_name) && $user_budget > 0) {
+                        // Create a new budget and save to database under the user_id
                         $budget_name = $_POST['budget_name'];
                         $user_budget = $_POST['user_budget'];
                         $stmt = $con->prepare("INSERT INTO budgets (user_id, budget_name, user_budget) VALUES (?, ?, ?)");
@@ -203,7 +208,7 @@ function calcExpenses($con, $budget_id)
                     getBudgets($con, $user_data);
 
                     // Unset the budget_id so that it doesn't cause issues when redrawing the page
-                    // $budget_id = null;
+                    $budget_id = null;
                 } else if (isset($_POST['select_budget'])) {
                     $_SESSION['selected_budget_id'] = $_POST['budget_id'];
                     getBudgets($con, $user_data);
@@ -230,8 +235,6 @@ function calcExpenses($con, $budget_id)
                 <th>Delete</th>
             </tr>
             <?php
-
-
             if (isset($_POST['add_expense'])) {
                 $budget_id = $_POST['budget_id'];
                 $expense_name = $_POST['expense_name'];

@@ -41,4 +41,4 @@ CREATE TABLE expenses (
   FOREIGN KEY (budget_id) REFERENCES budgets(id)
 );
 ```
-6. The website can be viewed under http://localhost/Budget-app/login.php
+6. The website can be viewed under http://localhost/Budget-app-php/index.php#
