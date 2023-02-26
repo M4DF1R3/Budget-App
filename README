@@ -3,7 +3,7 @@
 Fully manual budget app to track your expenses. Created using PHP and MYSQL with XAMPP to control local server.
 
 Working:
-- Backend full functional.
+- Backend full functional
 
 To Do:
 - Display the budget amount
@@ -15,7 +15,10 @@ Installation Instructions:
 2. Navigate to where XAMPP is installed (typically C:\xampp) and launch the xammp-control.exe
 3. Navigate to the htdoc folder in the xampp folder
 4. Download as ZIP and extract to folder or git clone to folder
-5. Create the MySQL tables in phpMyAdmin
+5. Create the MySQL tables in phpMyAdmin using the code in the appendix
+6. The website can be viewed under http://localhost/Budget-app/login.php
+
+##Appendix
 ```
 CREATE TABLE users (
   user_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -42,4 +45,3 @@ CREATE TABLE expenses (
   FOREIGN KEY (budget_id) REFERENCES budgets(id)
 );
 ```
-6. The website can be viewed under http://localhost/Budget-app/login.php
