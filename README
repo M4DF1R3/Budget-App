@@ -2,7 +2,8 @@
 
 Fully manual budget app to track your expenses. Created using PHP and MYSQL with XAMPP to control local server.
 
-![Showcase image](https://github.com/M4DF1R3/Budget-App-PHP/blob/main/imgs/budget-app.png)
+![Showcase image](https://github.com/M4DF1R3/Budget-App-PHP/blob/main/imgs/budget-app.png?raw=true)
+
 Working:
 - Backend full functional
 - Calculates the budget, expenses, and balance correctly
